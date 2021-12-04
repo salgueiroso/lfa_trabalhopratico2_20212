@@ -16,3 +16,54 @@ class CYK:
 
         self.regra_esquerda[esquerda].append(direita)
         self.regra_direita[direita].append(esquerda)
+
+    def carregar_regra(self, texto: str):
+        linhas = list(filter(lambda x: bool(x.strip()),
+                      texto.strip().splitlines()))
+        for linha in linhas:
+            esquerda, direita = map(
+                lambda item: item.strip(), linha.split('=>'))
+            direitas = re.findall(r"\w+", direita, re.IGNORECASE)
+            for item_direita in direitas:
+                self.__insere_item_regra(esquerda, item_direita)
+
+    def interpreta(self, palavra: str):
+
+        camadas: list[list[list[str]]] = [[]]
+
+        for item in re.findall(r"[a-z]", palavra, re.IGNORECASE):
+            if not self.regra_direita.get(item, None):
+                return False
+
+            to_insert = []
+
+            for regra in self.regra_direita[item]:
+                to_insert.append(regra)
+
+            camadas[0].append(to_insert)
+
+            print(f'{item}', end='\t')
+
+        print('')
+
+        for items in camadas[0]:
+            lst_str = ','.join(items)
+            print(f'{lst_str}', end='\t')
+
+        print('')
+
+        for nivel in range(2, len(camadas[0])+1):
+            camadas.insert(nivel-1, [])
+
+            for i in range(1, len(camadas[nivel-1-1])):
+
+                possibilidades = []
+
+                for l in range(1, nivel):
+                    for primeiro in camadas[l-1][i-1]:
+                        for segundo in camadas[nivel-l-1][i+l-1]:
+                            possibilidades.append(f'{primeiro}{segundo}')
+
+                camadas[nivel-1].insert(i-1, [])
+
+               
