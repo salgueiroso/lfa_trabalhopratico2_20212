@@ -66,4 +66,25 @@ class CYK:
 
                 camadas[nivel-1].insert(i-1, [])
 
-               
+                for tentativa in possibilidades:
+                    if self.regra_direita.get(tentativa, None):
+                        for regra in self.regra_direita[tentativa]:
+                            inserir = True
+
+                            for teste in camadas[nivel-1][i-1]:
+                                if teste == regra:
+                                    inserir = False
+                                    break
+
+                            if inserir:
+                                camadas[nivel-1][i-1].append(regra)
+
+            for items in camadas[nivel-1]:
+                saida = ','.join(items)
+                print(saida, end='\t')
+
+            print('')
+
+        tam = len(camadas[len(camadas[0])-1][0])
+
+        return tam != 0
